@@ -6,11 +6,11 @@ LONG WINAPI hook_nt_protect_virtual_memory(IN HANDLE process_handle, IN OUT PVOI
 	 */
 
 	 // inform about every nt_protect_virtual_memory call
-	Log::Info("===================");
-	Log::Info(process_handle, base_address);
-	Log::Info(number_of_bytes_to_protect, new_access_protection);
-	Log::Info(old_access_protection);
-	Log::Info("===================");
+	 // Log::Info("===================");
+	 // Log::Info(process_handle, base_address);
+	 // Log::Info(number_of_bytes_to_protect, new_access_protection);
+	 // Log::Info(old_access_protection);
+	 // Log::Info("===================");
 
 	if (new_access_protection >= 0x40) {
 		DWORD64 current_tick = GetTickCount64();
@@ -34,6 +34,13 @@ LONG WINAPI hook_nt_protect_virtual_memory(IN HANDLE process_handle, IN OUT PVOI
 	return anticheat_main::get().o_nt_protect_virtual_memory(process_handle, base_address, number_of_bytes_to_protect, new_access_protection, old_access_protection);
 }
 
+BOOL WINAPI hook_disable_thread_library_calls(_In_ HMODULE lib_module) {
+	Log::Info("DTLC", lib_module);
+	Log::Error("Detected forbidden module.");
+
+	return anticheat_main::get().o_disable_thread_library_calls(lib_module);
+}
+
 void anticheat_main::run_service()
 {
 	/*
@@ -41,7 +48,6 @@ void anticheat_main::run_service()
 	 * TODO: create classes for hooking & other stuff.
 	 */
 	HMODULE module_handle_ntdll = GetModuleHandleA("ntdll.dll");
-
 	nt_protect_virtual_memory_t nt_protect_virtual_memory = (nt_protect_virtual_memory_t)GetProcAddress(module_handle_ntdll, "NtProtectVirtualMemory");
 
 	auto hooking_status = MH_CreateHook(nt_protect_virtual_memory, &hook_nt_protect_virtual_memory, reinterpret_cast<LPVOID*>(&o_nt_protect_virtual_memory));
@@ -52,4 +58,14 @@ void anticheat_main::run_service()
 		Log::Error("Failed to enable hook / NtProtectVirtualMemory");
 	else
 		Log::Debug("Successfully enabled protection.");
+
+	// just test >:(
+	auto hooking_status_2 = MH_CreateHook(&DisableThreadLibraryCalls, &hook_disable_thread_library_calls, reinterpret_cast<LPVOID*>(&o_disable_thread_library_calls));
+	if (hooking_status_2 != MH_OK)
+		Log::Error("Failed to create hook / DisableThreadLibraryCalls", MH_StatusToString(hooking_status));
+
+	if (MH_EnableHook(&DisableThreadLibraryCalls) != MH_OK)
+		Log::Error("Failed to enable hook / DisableThreadLibraryCalls");
+	else
+		Log::Debug("Successfully enabled protection 2.");
 }
