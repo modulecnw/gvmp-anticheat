@@ -62,7 +62,7 @@ HANDLE WINAPI hook_create_file(_In_ LPCWSTR lpFileName, _In_ DWORD dwDesiredAcce
 FILE* __cdecl hook_fs_open(_In_z_ char const* _FileName, _In_z_ char const* _Mode, _In_ int _ShFlag) {
 	string file_name = _FileName;
 
-	if (file_name.find(".ini") != std::string::npos || file_name.find(".token") != std::string::npos) {
+	if (file_name.find(".ini") != std::string::npos || file_name.find(".token") != std::string::npos || file_name.find(".cfg") != std::string::npos) {
 		Log::Error("[FS_OPEN] Detected forbidden module.");
 	}
 
