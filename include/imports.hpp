@@ -24,6 +24,24 @@
 // min_hook
 #include <MinHook.h>
 
+// fontwrapper
+#include <vendor/fontwrapper/FW1FontWrapper.h>
+#include <vendor/fontwrapper/FW1CompileSettings.h>
+#include <vendor/fontwrapper/FW1Precompiled.h>
+#include <vendor/fontwrapper/CFW1TextRenderer.h>
+#include <vendor/fontwrapper/CFW1TextGeometry.h>
+#include <vendor/fontwrapper/CFW1StateSaver.h>
+#include <vendor/fontwrapper/CFW1Object.h>
+#include <vendor/fontwrapper/CFW1GlyphVertexDrawer.h>
+#include <vendor/fontwrapper/CFW1GlyphSheet.h>
+#include <vendor/fontwrapper/CFW1GlyphRenderStates.h>
+#include <vendor/fontwrapper/CFW1GlyphProvider.h>
+#include <vendor/fontwrapper/CFW1GlyphAtlas.h>
+#include <vendor/fontwrapper/CFW1FontWrapper.h>
+#include <vendor/fontwrapper/CFW1Factory.h>
+#include <vendor/fontwrapper/CFW1DWriteRenderTarget.h>
+#include <vendor/fontwrapper/CFW1ColorRGBA.h>
+
 //alt
 #include <vendor/alt/alt-log.hpp>
 using namespace alt;

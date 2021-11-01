@@ -13,5 +13,4 @@ public:
 	nt_protect_virtual_memory_t o_nt_protect_virtual_memory = nullptr;
 
 	void run_service();
-	void shutdown_service();
 };

@@ -53,8 +53,3 @@ void anticheat_main::run_service()
 	else
 		Log::Debug("Successfully enabled protection.");
 }
-
-void anticheat_main::shutdown_service()
-{
-	// todo
-}
