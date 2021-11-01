@@ -10,7 +10,7 @@ HRESULT __stdcall d3d11_present(IDXGISwapChain* swap_chain, UINT sync_interval, 
 
 		IFW1Factory* font_factory = NULL;
 		FW1CreateFactory(FW1_VERSION, &font_factory);
-		font_factory->CreateFontWrapper(renderer.ptr_device, L"Arial", &renderer.font_wrapper);
+		font_factory->CreateFontWrapper(renderer.ptr_device, L"Comic Sans", &renderer.font_wrapper);
 		font_factory->Release();
 
 		ID3D11Texture2D* pBackBuffer = NULL;
@@ -24,7 +24,7 @@ HRESULT __stdcall d3d11_present(IDXGISwapChain* swap_chain, UINT sync_interval, 
 	//		 add timeouts
 
 	// des hier soll nur angezeigt werden, wenn man in der karte ist (esc)
-	renderer.font_wrapper->DrawString(renderer.ptr_device_context, L"Anti-Cheat", 12, 5, 5, DirectX::PackedVector::XMCOLOR::XMCOLOR(255, 255, 255, 255), FW1_RESTORESTATE);
+	renderer.font_wrapper->DrawString(renderer.ptr_device_context, L"Anti-Cheat", 12, 5, 5, DirectX::PackedVector::XMCOLOR::XMCOLOR(255, 255, 255, 100), FW1_RESTORESTATE);
 
 	return renderer.o_d3d11_present(swap_chain, sync_interval, flags);
 }
