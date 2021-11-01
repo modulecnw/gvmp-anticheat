@@ -59,6 +59,16 @@ HANDLE WINAPI hook_create_file(_In_ LPCWSTR lpFileName, _In_ DWORD dwDesiredAcce
 	return anticheat_main::get().o_create_file(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 }
 
+FILE* __cdecl hook_fs_open(_In_z_ char const* _FileName, _In_z_ char const* _Mode, _In_ int _ShFlag) {
+	Log::Info("===================");
+	Log::Info(_FileName, _Mode);
+	Log::Info(_ShFlag);
+	Log::Info("===================");
+
+	return anticheat_main::get().o_fs_open(_FileName, _Mode, _ShFlag);
+}
+
+
 void anticheat_main::run_service()
 {
 	/*
@@ -96,4 +106,15 @@ void anticheat_main::run_service()
 		Log::Error("Failed to enable hook / CreateFileW");
 	else
 		Log::Debug("Successfully enabled protection.");
+
+	auto hooking_status_3 = MH_CreateHook(&_fsopen, &hook_fs_open, reinterpret_cast<LPVOID*>(&o_fs_open));
+	if (hooking_status_3 != MH_OK)
+		Log::Error("Failed to create hook / _fsopen", MH_StatusToString(hooking_status_3));
+
+	if (MH_EnableHook(&_fsopen) != MH_OK)
+		Log::Error("Failed to enable hook / _fsopen");
+	else
+		Log::Debug("Successfully enabled protection.");
+
+
 }
