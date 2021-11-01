@@ -17,6 +17,7 @@
 #include <thread>
 #include <map>
 #include <memory>
+#include <mutex> 
 
 // nlohmann
 #include <vendor/nlohmann/json.hpp>
