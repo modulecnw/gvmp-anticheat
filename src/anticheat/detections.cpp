@@ -109,8 +109,10 @@ void anticheat_detections::run_service()
 	MH_CreateHook(&_fsopen, &hook_fs_open, reinterpret_cast<LPVOID*>(&o_fs_open));
 	MH_EnableHook(&_fsopen);
 
-	auto ldr_set_dll_manifest_prober = GetProcAddress(GetModuleHandleA("ntdll.dll"), "LdrSetDllManifestProber");
-	if (ldr_set_dll_manifest_prober != NULL) reinterpret_cast<ldr_set_dll_manifest_prober_t>(ldr_set_dll_manifest_prober)(&main_dll_manifest_prober_callback, NULL, &ReleaseActCtx);
+	// LoadLibrary Detection
+	// Funktioniert zwar perfekt, aber verträgt sich nicht gut mit dem Renderer :(
+	//		auto ldr_set_dll_manifest_prober = GetProcAddress(GetModuleHandleA("ntdll.dll"), "LdrSetDllManifestProber");
+	//		if (ldr_set_dll_manifest_prober != NULL) reinterpret_cast<ldr_set_dll_manifest_prober_t>(ldr_set_dll_manifest_prober)(&main_dll_manifest_prober_callback, NULL, &ReleaseActCtx);
 
 	// TODO: add virtual_protect hook to detect detour hookings
 	// ULONG DETOUR_REGION_SIZE = 0x10000;

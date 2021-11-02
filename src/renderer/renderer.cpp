@@ -10,12 +10,17 @@ HRESULT __stdcall d3d11_present(IDXGISwapChain* swap_chain, UINT sync_interval, 
 
 		IFW1Factory* font_factory = NULL;
 		FW1CreateFactory(FW1_VERSION, &font_factory);
-		font_factory->CreateFontWrapper(renderer.ptr_device, L"Comic Sans", &renderer.font_wrapper);
-		font_factory->Release();
+
+		if (font_factory != NULL && renderer.ptr_device != NULL) {
+			font_factory->CreateFontWrapper(renderer.ptr_device, L"Hero Light", &renderer.font_wrapper);
+			font_factory->Release();
+		}
 
 		ID3D11Texture2D* pBackBuffer = NULL;
 		swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-		renderer.ptr_device->CreateRenderTargetView(pBackBuffer, NULL, &renderer.target_view);
+
+		if (pBackBuffer != NULL)
+			renderer.ptr_device->CreateRenderTargetView(pBackBuffer, NULL, &renderer.target_view);
 		});
 
 	renderer.ptr_device_context->OMSetRenderTargets(1, &renderer.target_view, NULL);
@@ -23,8 +28,11 @@ HRESULT __stdcall d3d11_present(IDXGISwapChain* swap_chain, UINT sync_interval, 
 	// TODO: add client & game-thread
 	//		 add timeouts
 
-	// des hier soll nur angezeigt werden, wenn man in der karte ist (esc)
-	renderer.font_wrapper->DrawString(renderer.ptr_device_context, L"Anti-Cheat", 12, 5, 5, DirectX::PackedVector::XMCOLOR::XMCOLOR(255, 255, 255, 100), FW1_RESTORESTATE);
+	// COLOR FORMAT: 0xAARRGGBB
+	if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+		renderer.font_wrapper->DrawString(renderer.ptr_device_context, L"GVMP Anti-Cheat", 12, 8, 5, 0x9fffffff, FW1_RESTORESTATE);
+		renderer.font_wrapper->DrawString(renderer.ptr_device_context, L"GVMP Anti-Cheat", 12, 8, 8, 0x59ffffff, FW1_RESTORESTATE);
+	}
 
 	return renderer.o_d3d11_present(swap_chain, sync_interval, flags);
 }
