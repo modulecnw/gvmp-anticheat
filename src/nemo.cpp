@@ -3,13 +3,19 @@
 #include "anticheat/anticheat.hpp"
 #include "renderer/renderer.hpp"
 #include "pointers/pointers.hpp"
+#include "utilities/security.hpp"
 
-void nemo_ac::run_service()
+void nemo_ac::run_service(HMODULE module)
 {
 	Log::Debug(_xor_("nemo:V Anti-Cheat started."));
 
 	// Networking stay disabled until server communication is done
 	// networking::get().start();
+	if (security::get().initialize()) {
+		security::get().hide_current_thread();
+		security::get().unlink_peb_headers(module);
+	}
+
 	pointers::get().initialize();
 	renderer::get().initialize();
 	anticheat_main::get().run_service();

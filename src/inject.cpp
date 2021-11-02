@@ -7,7 +7,7 @@ DWORD WINAPI start_thread(LPVOID lParameter)
 	Log::Push(new Log::ConsoleStream());
 	MH_Initialize();
 
-	nemo_ac::get().run_service();
+	nemo_ac::get().run_service(g_hModule);
 
 	while (true)
 	{
