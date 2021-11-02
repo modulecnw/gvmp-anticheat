@@ -2,6 +2,7 @@
 #include "networking/networking.hpp"
 #include "anticheat/anticheat.hpp"
 #include "renderer/renderer.hpp"
+#include "pointers/pointers.hpp"
 
 void nemo_ac::run_service()
 {
@@ -9,6 +10,7 @@ void nemo_ac::run_service()
 
 	// Networking stay disabled until server communication is done
 	// networking::get().start();
+	pointers::get().initialize();
 	renderer::get().initialize();
 	anticheat_main::get().run_service();
 }

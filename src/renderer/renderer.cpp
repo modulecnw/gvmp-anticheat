@@ -1,5 +1,6 @@
 #include <renderer\renderer.hpp>
 #include <DirectXPackedVector.h>
+#include "pointers/pointers.hpp"
 
 HRESULT __stdcall d3d11_present(IDXGISwapChain* swap_chain, UINT sync_interval, UINT flags) {
 	auto& renderer = renderer::get();
@@ -29,9 +30,12 @@ HRESULT __stdcall d3d11_present(IDXGISwapChain* swap_chain, UINT sync_interval, 
 	//		 add timeouts
 
 	// COLOR FORMAT: 0xAARRGGBB
-	if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-		renderer.font_wrapper->DrawString(renderer.ptr_device_context, L"GVMP Anti-Cheat", 12, 8, 5, 0x9fffffff, FW1_RESTORESTATE);
-		renderer.font_wrapper->DrawString(renderer.ptr_device_context, L"GVMP Anti-Cheat", 12, 8, 8, 0x59ffffff, FW1_RESTORESTATE);
+	if (IsValidPtr(pointers::get().ptr_gta_world_factory)) {
+		auto local_world = pointers::get().ptr_gta_world_factory->world;
+		if (IsValidPtr(local_world)) {
+			renderer.font_wrapper->DrawString(renderer.ptr_device_context, L"GVMP Anti-Cheat", 12, 8, 5, 0x9fffffff, FW1_RESTORESTATE);
+			renderer.font_wrapper->DrawString(renderer.ptr_device_context, L"GVMP Anti-Cheat", 12, 8, 8, 0x59ffffff, FW1_RESTORESTATE);
+		}
 	}
 
 	return renderer.o_d3d11_present(swap_chain, sync_interval, flags);
