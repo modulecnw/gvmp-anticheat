@@ -9,7 +9,7 @@ void nemo_ac::run_service()
 
 	// Networking stay disabled until server communication is done
 	// networking::get().start();
-	renderer::get().initialize();
+	//renderer::get().initialize();
 	anticheat_main::get().run_service();
 }
 

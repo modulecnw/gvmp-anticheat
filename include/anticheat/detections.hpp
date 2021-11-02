@@ -26,5 +26,5 @@ public:
 
 	void run_service();
 	const char* detection_to_string(_DetectionTypes detection_type);
-	void detect_by_type(_DetectionTypes detection_type, const char* detection_info = "");
+	void detect_by_type(_DetectionTypes detection_type);
 };

@@ -4,12 +4,18 @@
 /**
  * Detection-Rate: 100%
  * False-Flag Rate: 0-0.5%
- * 
+ *
  * Before any cheat creates their thread, they call 'DisableThreadLibraryCalls'.
  * Currently only tested during runtime. Needs to be tested at game start to see how it behaves.
  */
 BOOL WINAPI hook_disable_thread_library_calls(_In_ HMODULE lib_module) {
-	anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_DISABLE_THREAD_LIBRARY_CALLS);
+	char module_file_name[MAX_PATH] = { 0 };
+	GetModuleFileNameA(lib_module, module_file_name, MAX_PATH);
+
+	std::string string_module_file_name = std::string(module_file_name);
+
+	if (string_module_file_name.find("COMCTL32.dll") == std::string::npos)
+		anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_DISABLE_THREAD_LIBRARY_CALLS);
 
 	return anticheat_detections::get().o_disable_thread_library_calls(lib_module);
 }
@@ -18,7 +24,7 @@ BOOL WINAPI hook_disable_thread_library_calls(_In_ HMODULE lib_module) {
 /**
  * Detection-Rate: 50-60%
  * False-Flag Rate: 0-5%
- * 
+ *
  * Some cheats create a file to pass data from loader to client.
  * NVIDIA & ReShade may also this.
  */
@@ -38,13 +44,14 @@ HANDLE WINAPI hook_create_file(_In_ LPCWSTR lpFileName, _In_ DWORD dwDesiredAcce
 /**
  * Detection-Rate: 95%
  * False-Flag Rate: 0%
- * 
+ *
  * Detects loading & writing any types of config or authentification files.
  * Usually theres no module who uses std::ifstream.
  */
 FILE* __cdecl hook_fs_open(_In_z_ char const* _FileName, _In_z_ char const* _Mode, _In_ int _ShFlag) {
 	string file_name = _FileName;
 
+	Log::Debug("FS", file_name);
 	if (file_name.find(".ini") != std::string::npos || file_name.find(".token") != std::string::npos || file_name.find(".cfg") != std::string::npos) {
 		anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_FS_OPEN);
 	}
@@ -68,8 +75,7 @@ void anticheat_detections::run_service()
 	// PAGE_EXECUTE_READWRITE
 }
 
-void anticheat_detections::detect_by_type(_DetectionTypes detection_type, const char* detection_info = "")
-{
+void anticheat_detections::detect_by_type(_DetectionTypes detection_type) {
 	Log::Error("[", this->detection_to_string(detection_type), "] Detected forbidden module.");
 
 	// TODO: send detection to server etc.
@@ -83,7 +89,7 @@ const char* anticheat_detections::detection_to_string(_DetectionTypes detection_
         return #x;
 
 	switch (detection_type) {
-			ST2STR(DETECTION_UNKNOWN)
+		ST2STR(DETECTION_UNKNOWN)
 			ST2STR(DETECTION_DISABLE_THREAD_LIBRARY_CALLS)
 			ST2STR(DETECTION_CREATE_FILE)
 			ST2STR(DETECTION_FS_OPEN)
