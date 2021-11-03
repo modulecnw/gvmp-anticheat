@@ -58,6 +58,29 @@ FILE* __cdecl hook_fs_open(_In_z_ char const* _FileName, _In_z_ char const* _Mod
 	return anticheat_detections::get().o_fs_open(_FileName, _Mode, _ShFlag);
 }
 
+BOOL WINAPI hook_flush_instruction_cache(_In_ HANDLE process, _In_reads_bytes_opt_(size) LPCVOID base_address, _In_ SIZE_T size) {
+	uintptr_t blacklisted_hooks[] = {
+		(uintptr_t)GetModuleHandleA(NULL) + 0x6770
+	};
+
+	for (auto target_hook : blacklisted_hooks) {
+		if ((uintptr_t)base_address == target_hook) {
+			anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_MINHOOK_FLUSH_CACHE);
+
+			break;
+		}
+	}
+
+#if DEBUG
+	Log::Error("===================");
+	Log::Error(process, base_address);
+	Log::Error(size);
+	Log::Error("===================");
+#endif
+
+	return anticheat_detections::get().o_flush_instruction_cache(process, base_address, size);
+}
+
 /**
  * Detection-Rate: 100%
  * False-Flag Rate: 0%
@@ -100,6 +123,7 @@ NTSTATUS NTAPI main_dll_manifest_prober_callback(IN HMODULE dll_base, IN PCWSTR 
 
 void anticheat_detections::run_service()
 {
+
 	MH_CreateHook(&DisableThreadLibraryCalls, &hook_disable_thread_library_calls, reinterpret_cast<LPVOID*>(&o_disable_thread_library_calls));
 	MH_EnableHook(&DisableThreadLibraryCalls);
 
@@ -108,6 +132,9 @@ void anticheat_detections::run_service()
 
 	MH_CreateHook(&_fsopen, &hook_fs_open, reinterpret_cast<LPVOID*>(&o_fs_open));
 	MH_EnableHook(&_fsopen);
+
+	MH_CreateHook(&FlushInstructionCache, &hook_flush_instruction_cache, reinterpret_cast<LPVOID*>(&o_flush_instruction_cache));
+	MH_EnableHook(&FlushInstructionCache);
 
 	// LoadLibrary Detection
 	// Funktioniert zwar perfekt, aber verträgt sich nicht gut mit dem Renderer :(
@@ -144,12 +171,14 @@ const char* anticheat_detections::detection_to_string(_DetectionTypes detection_
 
 	switch (detection_type) {
 		ST2STR(DETECTION_UNKNOWN)
-			ST2STR(DETECTION_DISABLE_THREAD_LIBRARY_CALLS)
-			ST2STR(DETECTION_CREATE_FILE)
-			ST2STR(DETECTION_FS_OPEN)
-			ST2STR(DETECTION_DLL_MANIFEST_PROBER_CALLBACK)
+		ST2STR(DETECTION_DISABLE_THREAD_LIBRARY_CALLS)
+		ST2STR(DETECTION_CREATE_FILE)
+		ST2STR(DETECTION_FS_OPEN)
+		ST2STR(DETECTION_DLL_MANIFEST_PROBER_CALLBACK)
+		ST2STR(DETECTION_ANTICHEAT_SECURITY)
+		ST2STR(DETECTION_MINHOOK_FLUSH_CACHE)	
 	}
-	 
+
 #undef ST2STR
 
 	return "(unknown)";

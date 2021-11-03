@@ -43,7 +43,7 @@ std::string security::check_blacklisted_windows()
 		"SunAwtFrame",
 		"IDA Pro 7.1", "IDA Pro 7.2", "IDA Pro 7.3", "IDA Pro 7.4", "IDA Pro 7.5",
 		"Cheat Engine 7.1", "Cheat Engine 7.2",
-		"GH Injector x64", "GH Injector x32",
+		"GH Injector x64", "GH Injector x32", "GH Injector V3.2 (64-bit)"
 		"Xenos-64",
 		"immunity",
 	};

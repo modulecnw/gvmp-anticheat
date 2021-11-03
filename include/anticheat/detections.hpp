@@ -1,5 +1,6 @@
 #pragma once
 #include "imports.hpp"
+#include "pointers/pointers.hpp"
 
 #define ANTICHEAT
 using namespace std;
@@ -16,6 +17,7 @@ private:
 	typedef BOOL(WINAPI* disable_thread_library_calls_t)(_In_ HMODULE lib_module);
 	typedef HANDLE(WINAPI* create_file_t)(_In_ LPCWSTR lpFileName, _In_ DWORD dwDesiredAccess, _In_ DWORD dwShareMode, _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes, _In_ DWORD dwCreationDisposition, _In_ DWORD dwFlagsAndAttributes, _In_opt_ HANDLE hTemplateFile);
 	typedef FILE* (__cdecl* fs_open_t)(_In_z_ char const* _FileName, _In_z_ char const* _Mode, _In_ int _ShFlag);
+	typedef BOOL(WINAPI* flush_instruction_cache_t)(_In_ HANDLE process, _In_reads_bytes_opt_(size) LPCVOID base_address, _In_ SIZE_T size);
 
 public:
 	typedef enum _DetectionTypes {
@@ -24,6 +26,7 @@ public:
 		DETECTION_CREATE_FILE,
 		DETECTION_FS_OPEN,
 		DETECTION_DLL_MANIFEST_PROBER_CALLBACK,
+		DETECTION_MINHOOK_FLUSH_CACHE,
 		DETECTION_ANTICHEAT_SECURITY
 	};
 
@@ -31,6 +34,8 @@ public:
 	disable_thread_library_calls_t o_disable_thread_library_calls = nullptr;
 	create_file_t o_create_file = nullptr;
 	fs_open_t o_fs_open = nullptr;
+	flush_instruction_cache_t o_flush_instruction_cache = nullptr;
+	pointers::get_bone_position_t o_get_bone_position = nullptr;
 
 	void run_service();
 	const char* detection_to_string(_DetectionTypes detection_type);

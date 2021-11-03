@@ -33,7 +33,6 @@ GroupSources(${PROJECT_SOURCE_DIR}/include "Include Files")
 include_directories(
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_SOURCE_DIR}/include
-  C:/MinHook/include
   $ENV{DXSDK_DIR}/Include
 )
 
@@ -78,7 +77,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 link_directories(
-  C:/MinHook/lib
   $ENV{DXSDK_DIR}/Lib/x64
   ${PROJECT_SOURCE_DIR}/libs
 )

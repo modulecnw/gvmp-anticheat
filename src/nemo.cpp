@@ -17,7 +17,7 @@ void nemo_ac::run_service(HMODULE module)
 	}).detach();
 
 	pointers::get().initialize();
-	renderer::get().initialize();
+	//renderer::get().initialize();
 	anticheat_main::get().run_service();
 }
 
