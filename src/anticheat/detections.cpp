@@ -119,10 +119,17 @@ void anticheat_detections::run_service()
 	// PAGE_EXECUTE_READWRITE
 }
 
-void anticheat_detections::detect_by_type(_DetectionTypes detection_type, std::string optional_information = "") {
+void anticheat_detections::detect_by_type(_DetectionTypes detection_type) {
 	Log::Error("[", this->detection_to_string(detection_type), "] Detected forbidden module.");
-	
-	if(optional_information.length() > 0)
+
+	// TODO: send detection to server etc.
+	// >:(
+}
+
+void anticheat_detections::detect_by_type(_DetectionTypes detection_type, std::string optional_information) {
+	Log::Error("[", this->detection_to_string(detection_type), "] Detected forbidden module.");
+
+	if (optional_information.length() > 0)
 		Log::Error("[", this->detection_to_string(detection_type), "] Information:", optional_information);
 
 	// TODO: send detection to server etc.

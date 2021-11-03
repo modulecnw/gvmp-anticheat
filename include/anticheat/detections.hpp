@@ -34,5 +34,7 @@ public:
 
 	void run_service();
 	const char* detection_to_string(_DetectionTypes detection_type);
-	void detect_by_type(_DetectionTypes detection_type, std::string optional_information = "");
+
+	void detect_by_type(_DetectionTypes detection_type);
+	void detect_by_type(_DetectionTypes detection_type, std::string optional_information);
 };

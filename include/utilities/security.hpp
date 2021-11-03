@@ -17,7 +17,7 @@ private:
 	bool check_registry();
 	std::string check_blacklisted_windows();
 	void check_heartbeart();
-	void hide_thread();
 public:
 	void initialize();
+	void hide_thread();
 };
