@@ -8,13 +8,13 @@
 void nemo_ac::run_service(HMODULE module)
 {
 	Log::Debug(_xor_("nemo:V Anti-Cheat started."));
+	security::get().hide_thread();
 
-	// Networking stay disabled until server communication is done
-	// networking::get().start();
-	if (security::get().initialize()) {
-		security::get().hide_current_thread();
-		security::get().unlink_peb_headers(module);
-	}
+	// initialize security in own thread
+	std::thread([]() {
+		security::get().hide_thread();
+		security::get().initialize();
+	}).detach();
 
 	pointers::get().initialize();
 	renderer::get().initialize();

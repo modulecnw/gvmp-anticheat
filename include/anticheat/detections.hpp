@@ -1,7 +1,5 @@
 #pragma once
 #include "imports.hpp"
-#include <SubAuth.h>
-#include <TlHelp32.h>
 
 #define ANTICHEAT
 using namespace std;
@@ -25,7 +23,8 @@ public:
 		DETECTION_DISABLE_THREAD_LIBRARY_CALLS,
 		DETECTION_CREATE_FILE,
 		DETECTION_FS_OPEN,
-		DETECTION_DLL_MANIFEST_PROBER_CALLBACK
+		DETECTION_DLL_MANIFEST_PROBER_CALLBACK,
+		DETECTION_ANTICHEAT_SECURITY
 	};
 
 	nt_protect_virtual_memory_t o_nt_protect_virtual_memory = nullptr;

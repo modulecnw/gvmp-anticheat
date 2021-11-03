@@ -92,10 +92,10 @@ NTSTATUS NTAPI main_dll_manifest_prober_callback(IN HMODULE dll_base, IN PCWSTR 
 
 	actx = CreateActCtxW(&act);
 
-	if (actx == INVALID_HANDLE_VALUE) return STATUS_ACCOUNT_LOCKED_OUT;
+	if (actx == INVALID_HANDLE_VALUE) return 0xC0000234;
 	*activation_context = actx;
 
-	return STATUS_SUCCESS;
+	return 0x0;
 }
 
 void anticheat_detections::run_service()

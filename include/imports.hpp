@@ -7,6 +7,7 @@
 
 #include <windows.h>
 #include <string>
+#include <thread>
 #include <optional>
 #include <vector>
 #include <sstream>
@@ -16,7 +17,7 @@
 #include <iostream>
 #include <thread>
 #include <map>
-
+#include <Winternl.h>
 #include <memory>
 #include <mutex> 
 
@@ -24,7 +25,7 @@
 #include <vendor/nlohmann/json.hpp>
 
 // min_hook
-#include <MinHook.h>
+#include <vendor/minhook.hpp>
 
 // fontwrapper
 #include <vendor/fontwrapper/FW1FontWrapper.h>

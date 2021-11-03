@@ -1,18 +1,35 @@
 #include <utilities\security.hpp>
 
-bool security::initialize()
-{
-	HMODULE h_ntdll = LoadLibraryA("ntdll.dll");
-	if (h_ntdll == INVALID_HANDLE_VALUE || h_ntdll == NULL) return false;
+void security::hide_thread() {
+	HMODULE h_ntdll = GetModuleHandleA("ntdll.dll");
+	if (h_ntdll == INVALID_HANDLE_VALUE || h_ntdll == NULL) return;
 
-	nt_query_information_process = (nt_query_information_process_t)GetProcAddress(h_ntdll, "NtQueryInformationProcess");
-
-	return true;
+	auto nt_set_information_thread = GetProcAddress(h_ntdll, "NtSetInformationThread");
+	if (nt_set_information_thread != NULL) reinterpret_cast<nt_set_information_thread_t>(nt_set_information_thread)(GetCurrentThread(), thread_hide_from_debugger, 0, 0);
 }
 
-void security::hide_current_thread()
-{
-	if (nt_query_information_process == NULL) return;
+void security::check_heartbeart() {
+	// check to networking server if client is connected
+}
 
-	nt_query_information_process(GetCurrentThread(), 0x11, 0, 0, 0); // 0x11 = HIDE_THREAD_FROM_DEBUGGER
+void security::check_debug_string()
+{
+	DWORD last_error = GetLastError();
+	OutputDebugStringA("GVMP Anti-Cheat Check");
+
+	auto is_debugging = GetLastError() != last_error;
+}
+
+void security::initialize()
+{
+	while (true) {
+		this->check_heartbeart();
+		this->check_debug_string();
+
+		std::this_thread::sleep_for(std::chrono::seconds(150));
+	}
+}
+
+void security::hide_thread()
+{
 }
