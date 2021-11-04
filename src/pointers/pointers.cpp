@@ -20,6 +20,6 @@ void pointers::initialize()
 	this->ptr_gta_world_factory = as_relative<CWorldFactory*>(find_pattern(this->gta5_module, "WorldFactory", "48 8B C3 48 83 C4 20 5B C3 0F B7 05 ? ? ? ?", -0xB));
 	this->ptr_gta_viewport = *as_relative<CViewPort**>(find_pattern(this->gta5_module, "Viewport", "48 8B 15 ? ? ? ? 48 8D 2D ? ? ? ? 48 8B CD"));
 	this->ptr_gta_camera = as_relative<uintptr_t>(find_pattern(this->gta5_module, "Camera", "48 8B 05 ? ? ? ? 48 8B 98 ? ? ? ? EB"));
-	this->ptr_gta_get_bone_position = memory::find_pattern<get_bone_position_t>(this->gta5_module, "GetBone", "48 83 EC 60 48 8B 01 41 8B E8 48 8B F2", -0x10);
+	this->ptr_gta_get_bone_position = memory::find_pattern<get_bone_position_t>(this->gta5_module, "GetBone", "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 60 48 8B 01 41 8B E8 48 8B F2 48 8B F9 33 DB");
 	this->ptr_gta_pointer_to_handle = find_pattern<pointer_to_handle_t>(this->gta5_module, "PointerToHandle", "48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 20 8B 15 ? ? ? ? 48 8B F9 48 83 C1 10 33 DB");
 }

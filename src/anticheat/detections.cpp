@@ -14,8 +14,8 @@ BOOL WINAPI hook_disable_thread_library_calls(_In_ HMODULE lib_module) {
 
 	std::string string_module_file_name = std::string(module_file_name);
 
-	if (string_module_file_name.find("COMCTL32.dll") == std::string::npos)
-		anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_DISABLE_THREAD_LIBRARY_CALLS);
+	if (string_module_file_name.find("COMCTL32.dll") == std::string::npos && string_module_file_name.find("XAudio2_7.dll") == std::string::npos)
+		anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_DISABLE_THREAD_LIBRARY_CALLS, string_module_file_name);
 
 	return anticheat_detections::get().o_disable_thread_library_calls(lib_module);
 }
@@ -34,7 +34,7 @@ HANDLE WINAPI hook_create_file(_In_ LPCWSTR lpFileName, _In_ DWORD dwDesiredAcce
 
 	if (file_name.find(".ini") != std::string::npos) {
 		if (file_name.find("ReShade") == std::string::npos) {
-			anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_CREATE_FILE);
+			anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_CREATE_FILE, file_name);
 		}
 	}
 
@@ -52,10 +52,16 @@ FILE* __cdecl hook_fs_open(_In_z_ char const* _FileName, _In_z_ char const* _Mod
 	string file_name = _FileName;
 
 	if (file_name.find(".ini") != std::string::npos || file_name.find(".token") != std::string::npos || file_name.find(".cfg") != std::string::npos) {
-		anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_FS_OPEN);
+		anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_FS_OPEN, file_name);
 	}
 
 	return anticheat_detections::get().o_fs_open(_FileName, _Mode, _ShFlag);
+}
+
+HWND WINAPI hook_create_window(_In_ DWORD ex_style, _In_opt_ LPCSTR class_name, _In_opt_ LPCSTR window_name, _In_ DWORD style, _In_ int x, _In_ int y, _In_ int width, _In_ int height, _In_opt_ HWND parent, _In_opt_ HMENU menu, _In_opt_ HINSTANCE instance, _In_opt_ LPVOID param) {
+	anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_CREATE_WINDOW, std::string(class_name));
+
+	return anticheat_detections::get().o_create_window(ex_style, class_name, window_name, style, x, y, width, height, parent, menu, instance, param);
 }
 
 BOOL WINAPI hook_flush_instruction_cache(_In_ HANDLE process, _In_reads_bytes_opt_(size) LPCVOID base_address, _In_ SIZE_T size) {
@@ -136,6 +142,9 @@ void anticheat_detections::run_service()
 	MH_CreateHook(&FlushInstructionCache, &hook_flush_instruction_cache, reinterpret_cast<LPVOID*>(&o_flush_instruction_cache));
 	MH_EnableHook(&FlushInstructionCache);
 
+	MH_CreateHook(&CreateWindowExA, &hook_create_window, reinterpret_cast<LPVOID*>(&o_create_window));
+	MH_EnableHook(&CreateWindowExA);
+
 	// LoadLibrary Detection
 	// Funktioniert zwar perfekt, aber verträgt sich nicht gut mit dem Renderer :(
 	//		auto ldr_set_dll_manifest_prober = GetProcAddress(GetModuleHandleA("ntdll.dll"), "LdrSetDllManifestProber");
@@ -171,12 +180,13 @@ const char* anticheat_detections::detection_to_string(_DetectionTypes detection_
 
 	switch (detection_type) {
 		ST2STR(DETECTION_UNKNOWN)
-		ST2STR(DETECTION_DISABLE_THREAD_LIBRARY_CALLS)
-		ST2STR(DETECTION_CREATE_FILE)
-		ST2STR(DETECTION_FS_OPEN)
-		ST2STR(DETECTION_DLL_MANIFEST_PROBER_CALLBACK)
-		ST2STR(DETECTION_ANTICHEAT_SECURITY)
-		ST2STR(DETECTION_MINHOOK_FLUSH_CACHE)	
+			ST2STR(DETECTION_DISABLE_THREAD_LIBRARY_CALLS)
+			ST2STR(DETECTION_CREATE_FILE)
+			ST2STR(DETECTION_FS_OPEN)
+			ST2STR(DETECTION_DLL_MANIFEST_PROBER_CALLBACK)
+			ST2STR(DETECTION_MINHOOK_FLUSH_CACHE)
+			ST2STR(DETECTION_CREATE_WINDOW)
+			ST2STR(DETECTION_ANTICHEAT_SECURITY)
 	}
 
 #undef ST2STR
