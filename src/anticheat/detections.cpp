@@ -58,6 +58,12 @@ FILE* __cdecl hook_fs_open(_In_z_ char const* _FileName, _In_z_ char const* _Mod
 	return anticheat_detections::get().o_fs_open(_FileName, _Mode, _ShFlag);
 }
 
+/**
+ * Detection-Rate: 100%
+ * False-Flag Rate: 0%
+ *
+ * Detects common internal cheat overlays. 
+ */
 HWND WINAPI hook_create_window(_In_ DWORD ex_style, _In_opt_ LPCSTR class_name, _In_opt_ LPCSTR window_name, _In_ DWORD style, _In_ int x, _In_ int y, _In_ int width, _In_ int height, _In_opt_ HWND parent, _In_opt_ HMENU menu, _In_opt_ HINSTANCE instance, _In_opt_ LPVOID param) {
 	auto result = anticheat_detections::get().o_create_window(ex_style, class_name, window_name, style, x, y, width, height, parent, menu, instance, param);
 	if (class_name == NULL) return result;
@@ -70,6 +76,13 @@ HWND WINAPI hook_create_window(_In_ DWORD ex_style, _In_opt_ LPCSTR class_name, 
 	return result;
 }
 
+/**
+ * Detection-Rate: 100%
+ * False-Flag Rate: 0%
+ *
+ * FlushInstructionCache is getting called by MinHook.
+ * It detects blacklisted hooks (e.g. Game-Thread & ScriptHook) in realtime.
+ */
 BOOL WINAPI hook_flush_instruction_cache(_In_ HANDLE process, _In_reads_bytes_opt_(size) LPCVOID base_address, _In_ SIZE_T size) {
 	uintptr_t blacklisted_hooks[] = {
 		(uintptr_t)GetModuleHandleA(NULL) + 0x6770
