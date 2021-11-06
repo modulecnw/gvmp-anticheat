@@ -11,6 +11,16 @@ DWORD WINAPI start_thread(LPVOID lParameter)
 
 	while (true)
 	{
+		// External Cheat Test
+		/*if (GetAsyncKeyState(VK_ADD) & 0x1) {
+			auto hwnd = GetTopWindow((HWND)GetForegroundWindow());
+
+			std::wstring title(GetWindowTextLength(hwnd) + 1, L'\0');
+			GetWindowTextW(hwnd, &title[0], title.size());
+
+			Log::Info(title.c_str());
+		}*/
+
 		if (GetAsyncKeyState(VK_PRIOR) & 0x8000)
 			break;
 

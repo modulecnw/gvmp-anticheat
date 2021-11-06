@@ -59,9 +59,15 @@ FILE* __cdecl hook_fs_open(_In_z_ char const* _FileName, _In_z_ char const* _Mod
 }
 
 HWND WINAPI hook_create_window(_In_ DWORD ex_style, _In_opt_ LPCSTR class_name, _In_opt_ LPCSTR window_name, _In_ DWORD style, _In_ int x, _In_ int y, _In_ int width, _In_ int height, _In_opt_ HWND parent, _In_opt_ HMENU menu, _In_opt_ HINSTANCE instance, _In_opt_ LPVOID param) {
-	anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_CREATE_WINDOW, std::string(class_name));
+	auto result = anticheat_detections::get().o_create_window(ex_style, class_name, window_name, style, x, y, width, height, parent, menu, instance, param);
+	if (class_name == NULL) return result;
 
-	return anticheat_detections::get().o_create_window(ex_style, class_name, window_name, style, x, y, width, height, parent, menu, instance, param);
+	std::string string_window_name(class_name);
+
+	if (string_window_name != "DXGIWatchdogThreadWindow" && string_window_name != "D3DProxyWindow")
+		anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_CREATE_WINDOW, string_window_name);
+
+	return result;
 }
 
 BOOL WINAPI hook_flush_instruction_cache(_In_ HANDLE process, _In_reads_bytes_opt_(size) LPCVOID base_address, _In_ SIZE_T size) {
