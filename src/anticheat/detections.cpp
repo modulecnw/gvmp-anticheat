@@ -12,6 +12,35 @@ BOOL WINAPI hook_disable_thread_library_calls(_In_ HMODULE lib_module) {
 	char module_file_name[MAX_PATH] = { 0 };
 	GetModuleFileNameA(lib_module, module_file_name, MAX_PATH);
 
+	MODULEINFO module_info = { 0 };
+	GetModuleInformation(GetCurrentProcess(), lib_module, &module_info, sizeof(MODULEINFO));
+
+	DWORD base_address = (DWORD)module_info.lpBaseOfDll;
+	DWORD base_size = (DWORD)module_info.SizeOfImage;
+
+	/*
+	//-- DUMP SHIT --
+	// Enjoy cheat for free >:(
+
+	LPVOID dll_buffer;
+	LPDWORD  bytes_written;
+	HANDLE handle_drop;
+
+	dll_buffer = VirtualAlloc(NULL, module_info.SizeOfImage, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+
+	if (dll_buffer == NULL) return;
+	ReadProcessMemory(GetCurrentProcess(), module_info.lpBaseOfDll, dll_buffer, module_info.SizeOfImage, NULL);
+
+	handle_drop = CreateFile("C:\\cheat.dump", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, 0, NULL);
+	if (handle_drop != INVALID_HANDLE_VALUE)
+	{
+		WriteFile(handle_drop, dll_buffer, module_info.SizeOfImage, bytes_written, NULL);
+	}
+
+	VirtualFree(dll_buffer, NULL, MEM_RELEASE);
+	CloseHandle(handle_drop);
+	*/
+
 	std::string string_module_file_name = std::string(module_file_name);
 
 	if (string_module_file_name.find("COMCTL32.dll") == std::string::npos && string_module_file_name.find("XAudio2_7.dll") == std::string::npos)
@@ -62,7 +91,7 @@ FILE* __cdecl hook_fs_open(_In_z_ char const* _FileName, _In_z_ char const* _Mod
  * Detection-Rate: 100%
  * False-Flag Rate: 0%
  *
- * Detects common internal cheat overlays. 
+ * Detects common internal cheat overlays.
  */
 HWND WINAPI hook_create_window(_In_ DWORD ex_style, _In_opt_ LPCSTR class_name, _In_opt_ LPCSTR window_name, _In_ DWORD style, _In_ int x, _In_ int y, _In_ int width, _In_ int height, _In_opt_ HWND parent, _In_opt_ HMENU menu, _In_opt_ HINSTANCE instance, _In_opt_ LPVOID param) {
 	auto result = anticheat_detections::get().o_create_window(ex_style, class_name, window_name, style, x, y, width, height, parent, menu, instance, param);
@@ -96,14 +125,22 @@ BOOL WINAPI hook_flush_instruction_cache(_In_ HANDLE process, _In_reads_bytes_op
 		}
 	}
 
-#if DEBUG
-	Log::Error("===================");
-	Log::Error(process, base_address);
-	Log::Error(size);
-	Log::Error("===================");
-#endif
-
 	return anticheat_detections::get().o_flush_instruction_cache(process, base_address, size);
+}
+
+bool __fastcall hook_world_to_screen(Vector3* world_position, float* out_x, float* out_y) {
+	// TODO: handling detection
+	// Die Frage ist: Arbeitet RAGE:MP auch damit? Mal im Normalgebrauch testen
+
+	return anticheat_detections::get().o_world_to_screen(world_position, out_x, out_y);
+}
+
+
+void* __fastcall hook_get_bone_position(__int64 ped, __int64 pos_out, int32_t bone) {
+	// TODO: handling detection
+	// Die Frage ist: Arbeitet RAGE:MP auch damit? Mal im Normalgebrauch testen
+
+	return anticheat_detections::get().o_get_bone_position(ped, pos_out, bone);
 }
 
 /**
@@ -164,14 +201,14 @@ void anticheat_detections::run_service()
 	MH_CreateHook(&CreateWindowExA, &hook_create_window, reinterpret_cast<LPVOID*>(&o_create_window));
 	MH_EnableHook(&CreateWindowExA);
 
-	// LoadLibrary Detection
-	// Funktioniert zwar perfekt, aber verträgt sich nicht gut mit dem Renderer :(
-	//		auto ldr_set_dll_manifest_prober = GetProcAddress(GetModuleHandleA("ntdll.dll"), "LdrSetDllManifestProber");
-	//		if (ldr_set_dll_manifest_prober != NULL) reinterpret_cast<ldr_set_dll_manifest_prober_t>(ldr_set_dll_manifest_prober)(&main_dll_manifest_prober_callback, NULL, &ReleaseActCtx);
+	MH_CreateHook(pointers::get().ptr_gta_world_to_screen, &hook_world_to_screen, reinterpret_cast<LPVOID*>(&o_world_to_screen));
+	MH_EnableHook(pointers::get().ptr_gta_world_to_screen);
 
-	// TODO: add virtual_protect hook to detect detour hookings
-	// ULONG DETOUR_REGION_SIZE = 0x10000;
-	// PAGE_EXECUTE_READWRITE
+	MH_CreateHook(pointers::get().ptr_gta_get_bone_position, &hook_get_bone_position, reinterpret_cast<LPVOID*>(&o_get_bone_position));
+	MH_EnableHook(pointers::get().ptr_gta_get_bone_position);
+	
+	//	auto ldr_set_dll_manifest_prober = GetProcAddress(GetModuleHandleA("ntdll.dll"), "LdrSetDllManifestProber");
+	//	if (ldr_set_dll_manifest_prober != NULL) reinterpret_cast<ldr_set_dll_manifest_prober_t>(ldr_set_dll_manifest_prober)(&main_dll_manifest_prober_callback, NULL, &ReleaseActCtx);
 }
 
 void anticheat_detections::detect_by_type(_DetectionTypes detection_type) {

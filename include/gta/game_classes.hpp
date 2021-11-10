@@ -1831,7 +1831,7 @@ struct n_ped_t {
 	bool is_visible;
 };
 
-enum game_state_t
+enum class game_state_t : std::uint32_t
 {
 	playing,
 	intro,

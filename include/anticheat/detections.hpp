@@ -38,7 +38,9 @@ public:
 	fs_open_t o_fs_open = nullptr;
 	flush_instruction_cache_t o_flush_instruction_cache = nullptr;
 	create_window_t o_create_window = nullptr;
+
 	pointers::get_bone_position_t o_get_bone_position = nullptr;
+	pointers::world_to_screen_t o_world_to_screen = nullptr;
 
 	void run_service();
 	const char* detection_to_string(_DetectionTypes detection_type);
