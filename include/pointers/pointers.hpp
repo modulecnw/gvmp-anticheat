@@ -29,6 +29,7 @@ public:
 	world_to_screen_t ptr_gta_world_to_screen = nullptr;
 	pointer_to_handle_t ptr_gta_pointer_to_handle = nullptr;
 	event_gun_shot_t ptr_gta_event_shot = nullptr;
+	std::string* ptr_ragemp_get_name = nullptr;
 
 	void initialize();
 };

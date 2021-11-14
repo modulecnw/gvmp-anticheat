@@ -25,6 +25,8 @@ void pointers::initialize()
 	this->ptr_gta_world_to_screen = find_pattern<world_to_screen_t>(this->gta5_module, "WorldToScreen", "48 89 5C 24 ? 55 56 57 48 83 EC 70 65 4C 8B 0C 25 ? 00 00 00 8B");
 	this->ptr_gta_pointer_to_handle = find_pattern<pointer_to_handle_t>(this->gta5_module, "PointerToHandle", "48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 20 8B 15 ? ? ? ? 48 8B F9 48 83 C1 10 33 DB");
 
+	this->ptr_ragemp_get_name = find_pattern<std::string*>(this->ragemp_module, "PlayerName", "70 78 46 ? 70 78 46 ? 40 1C 45 ? FF ? ?", 0xF);
+
 	// dauert lange, da er alle module durchscannt  :p
 	//if (find_pattern_outside_module<uintptr_t>("0xCheats", "E8 ? ? ? ? 41 52 49 89 E2") != 0)
 	//	Log::Info("FOUND");

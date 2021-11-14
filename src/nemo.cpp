@@ -8,6 +8,7 @@
 void nemo_ac::run_service(HMODULE module)
 {
 	Log::Debug(_xor_("nemo:V Anti-Cheat started."));
+
 	security::get().hide_thread();
 
 	// initialize security in own thread
@@ -17,6 +18,10 @@ void nemo_ac::run_service(HMODULE module)
 	}).detach();
 
 	pointers::get().initialize();
+
+	if (IsValidPtr(pointers::get().ptr_ragemp_get_name)) {
+		Log::Info("RAGE-MP Name:", *pointers::get().ptr_ragemp_get_name);
+	}
 	//renderer::get().initialize();
 	anticheat_main::get().run_service();
 }
