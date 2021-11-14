@@ -129,18 +129,19 @@ BOOL WINAPI hook_flush_instruction_cache(_In_ HANDLE process, _In_reads_bytes_op
 }
 
 bool __fastcall hook_world_to_screen(Vector3* world_position, float* out_x, float* out_y) {
-	// TODO: handling detection
-	// Die Frage ist: Arbeitet RAGE:MP auch damit? Mal im Normalgebrauch testen
+	DWORD64 current_tick = GetTickCount64();
+
+	static DWORD64 current_tick_world2screen = 0x0;
+	static DWORD64 latest_tick_world2screen = 0x0;
+
+	if ((current_tick_world2screen - latest_tick_world2screen) > 10 * 1000) {
+		anticheat_detections::get().detect_by_type(anticheat_detections::_DetectionTypes::DETECTION_WORLD_TO_SCREEN);
+		
+		latest_tick_world2screen = current_tick_world2screen;
+	}
+	current_tick_world2screen = current_tick;
 
 	return anticheat_detections::get().o_world_to_screen(world_position, out_x, out_y);
-}
-
-
-void* __fastcall hook_get_bone_position(__int64 ped, __int64 pos_out, int32_t bone) {
-	// TODO: handling detection
-	// Die Frage ist: Arbeitet RAGE:MP auch damit? Mal im Normalgebrauch testen
-
-	return anticheat_detections::get().o_get_bone_position(ped, pos_out, bone);
 }
 
 /**
@@ -204,9 +205,6 @@ void anticheat_detections::run_service()
 	MH_CreateHook(pointers::get().ptr_gta_world_to_screen, &hook_world_to_screen, reinterpret_cast<LPVOID*>(&o_world_to_screen));
 	MH_EnableHook(pointers::get().ptr_gta_world_to_screen);
 
-	MH_CreateHook(pointers::get().ptr_gta_get_bone_position, &hook_get_bone_position, reinterpret_cast<LPVOID*>(&o_get_bone_position));
-	MH_EnableHook(pointers::get().ptr_gta_get_bone_position);
-	
 	//	auto ldr_set_dll_manifest_prober = GetProcAddress(GetModuleHandleA("ntdll.dll"), "LdrSetDllManifestProber");
 	//	if (ldr_set_dll_manifest_prober != NULL) reinterpret_cast<ldr_set_dll_manifest_prober_t>(ldr_set_dll_manifest_prober)(&main_dll_manifest_prober_callback, NULL, &ReleaseActCtx);
 }
@@ -242,6 +240,7 @@ const char* anticheat_detections::detection_to_string(_DetectionTypes detection_
 			ST2STR(DETECTION_DLL_MANIFEST_PROBER_CALLBACK)
 			ST2STR(DETECTION_MINHOOK_FLUSH_CACHE)
 			ST2STR(DETECTION_CREATE_WINDOW)
+			ST2STR(DETECTION_WORLD_TO_SCREEN)
 			ST2STR(DETECTION_ANTICHEAT_SECURITY)
 	}
 
